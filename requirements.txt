@@ -1,3 +1,7 @@
 # external requirements
 ipykernel
 python-dotenv
+pandas
+openai
+streamlit
+markdown-pdf

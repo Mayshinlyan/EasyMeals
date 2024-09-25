@@ -2,6 +2,11 @@
 __pycache__/
 *.py[cod]
 
+# static files
+*.jpg
+*.pdf
+*.png
+
 # C extensions
 *.so
 
@@ -58,6 +63,7 @@ target/
 
 # DotEnv configuration
 .env
+.venv
 
 # Database
 *.db
