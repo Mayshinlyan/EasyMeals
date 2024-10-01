@@ -1,13 +1,24 @@
 import urllib.request as urllib
-from openai import OpenAI
+import streamlit as st
 
-client = OpenAI()
 
-NumOfDay = 2
+# from diffusers import StableDiffusionPipeline
+# def smaller_image():
+
+
+#     # Load the Stable Diffusion model
+#     pipe = StableDiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4")
+
+#     # Generate a 512x512 image
+#     image = pipe("a beautiful landscape", height=512, width=512).images[0]
+
+#     # Save or display the image
+#     image.save("output.png")
 
 
 # Generate Image from user prompt
 def get_image_from_DALL_E_3_API(
+    client,
     user_prompt,
     image_dimension="1024x1024",
     image_quality="hd",
@@ -34,17 +45,17 @@ def grab_text_between(text, start_phrase, end_phrase):
         start_index = None
         end_index = None
 
-    # Find the index of the start phrase and end phrase
-    for i, line in enumerate(lines):
-        if start_phrase in line and start_index is None:
-            start_index = i
-        if end_phrase in line and start_index is not None:
-            end_index = i
-            break
+        # Find the index of the start phrase and end phrase
+        for i, line in enumerate(lines):
+            if start_phrase in line and start_index is None:
+                start_index = i
+            if end_phrase in line and start_index is not None:
+                end_index = i
+                break
 
-    # If both start and end indices are found, return the lines between
-    if start_index is not None and end_index is not None:
-        return "\n".join(lines[start_index:end_index])
+        # If both start and end indices are found, return the lines between
+        if start_index is not None and end_index is not None:
+            return "\n".join(lines[start_index:end_index])
 
     return None  # Return None if no match is found
 
@@ -63,9 +74,7 @@ def grab_text_after(text, start_phrase):
 
 
 # Break down the meal plan by days and generate images
-def generate_meal_image(body):
-    # NumOfDay = st.session_state.context.get("NumOfDays")
-    # print("This is the num of day:" + NumOfDay)
+def generate_meal_image(client, body, NumOfDay):
     meal_list = []
 
     for i in range(1, NumOfDay):
@@ -76,21 +85,29 @@ def generate_meal_image(body):
 
     for index, value in enumerate(meal_list):
         if index != NumOfDay:
-            # grab breakfast prompt
-            dish_prompt_breakfast = grab_text_between(
-                value, f"Day {index+1}", "Ingredients"
-            )
 
-            url_breakfast = get_image_from_DALL_E_3_API(dish_prompt_breakfast)
-            urllib.urlretrieve(url_breakfast, f"Day_{index+1}_breakfast.jpg")
+            if st.session_state.get("breakfast") == "breakfast":
+                # grab breakfast prompt
+                dish_prompt_breakfast = grab_text_between(
+                    value, f"Day {index+1}", "Ingredients"
+                )
+                url_breakfast = get_image_from_DALL_E_3_API(
+                    client, dish_prompt_breakfast
+                )
+                urllib.urlretrieve(url_breakfast, f"Day_{index+1}_breakfast.jpg")
 
-            dish_prompt_lunch = grab_text_between(value, f"LUNCH:", "Ingredients")
-            url_lunch = get_image_from_DALL_E_3_API(dish_prompt_lunch)
-            urllib.urlretrieve(url_lunch, f"Day_{index+1}_lunch.jpg")
+            if st.session_state.get("lunch") == "lunch":
+                dish_prompt_lunch = grab_text_between(value, f"Lunch:", "Ingredients")
+                url_lunch = get_image_from_DALL_E_3_API(client, dish_prompt_lunch)
+                urllib.urlretrieve(url_lunch, f"Day_{index+1}_lunch.jpg")
 
-            dish_prompt_dinner = grab_text_between(value, f"DINNER:", "Ingredients")
-            url_dinner = get_image_from_DALL_E_3_API(dish_prompt_dinner)
-            urllib.urlretrieve(url_dinner, f"Day_{index+1}_dinner.jpg")
+            if st.session_state.get("dinner") == "dinner":
+                dish_prompt_dinner = grab_text_between(value, f"Dinner:", "Ingredients")
+                url_dinner = get_image_from_DALL_E_3_API(client, dish_prompt_dinner)
+                urllib.urlretrieve(url_dinner, f"Day_{index+1}_dinner.jpg")
+
+            # dish_prompt_snack = grab_text_between(value, f"SNACK:", "Ingredients")
+            # url_snack = get_image_from_DALL_E_3_API(client, dish_prompt_snack)
+            # urllib.urlretrieve(url_snack, f"Day_{index+1}snack.jpg")
 
     return meal_list
-    # meal_list.append(grab_text_between(body, "Day 7", "Day 2"))
