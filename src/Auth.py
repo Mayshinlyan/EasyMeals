@@ -24,17 +24,44 @@ def doAuth():
         # st.write(f"Hello, {st.session_state['user_info'].get('name')}")
         # st.write(f"Your email is {st.session_state['user_info'].get('email')}")
 
-        # check if onboarded
-        # if no st.session state onboarded no
-        # if yes do nth and take the user to the chatbot
-        # st session state onboarded yes
-        email = st.session_state["user_info"].get("email")
-        user_info = get_user_info(email)
-        if user_info[3] == "0":
-            st.session_state["onboarded"] = "no"
-        else:
-            st.session_state["onboarded"] = "yes"
-        print(user_info)
+        # fetch user info and store it in the session state
+        fetchUserInfo()
 
         if st.button("Log out"):
             authenticator.logout()
+
+
+def fetchUserInfo():
+    email = st.session_state["user_info"].get("email")
+    user_info = get_user_info(email)
+    if user_info == None:
+        st.session_state["onboarded"] = "no"
+    else:
+        st.session_state["onboarded"] = "yes"
+
+        # Store all user info in the session state
+        st.session_state["favFood"] = user_info[4]
+        st.session_state["dislikeFood"] = user_info[5]
+        if user_info[6] == "1":
+            st.session_state["breakfast"] = "breakfast"
+        else:
+            st.session_state["breakfast"] = ""
+
+        if user_info[7] == "1":
+            st.session_state["lunch"] = "lunch"
+        else:
+            st.session_state["lunch"] = ""
+
+        if user_info[8] == "1":
+            st.session_state["dinner"] = "dinner"
+        else:
+            st.session_state["dinner"] = ""
+
+        if user_info[9] == "1":
+            st.session_state["snack"] = "snack"
+        else:
+            st.session_state["snack"] = ""
+
+        st.session_state["NumOfDay"] = user_info[10]
+
+        print(user_info)

@@ -5,3 +5,5 @@ pandas
 openai
 streamlit
 markdown-pdf
+streamlit-google-auth
+psycopg2
