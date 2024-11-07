@@ -63,7 +63,7 @@ target/
 
 # DotEnv configuration
 .env
-.venv
+.venv/
 
 # Database
 *.db
@@ -93,3 +93,5 @@ target/
 
 # Mypy cache
 .mypy_cache/
+
+google_credentials.json

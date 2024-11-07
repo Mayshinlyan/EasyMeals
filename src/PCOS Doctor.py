@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 import os
 from Database import *
 
+st.set_page_config(page_title="EasyMeals", page_icon=":green_salad:" )
+
 # Load variables from .env file
 load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 
@@ -14,11 +16,32 @@ load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
 # OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 client = OpenAI()
 
-st.title("Curing Your PCOS")
+st.markdown("<h1 style='text-align: center; color: black;'>EasyMeals for PCOS</h1>", unsafe_allow_html=True)
 
+st.markdown(
+    """
+    <style>
+    .centered-image {
+        display: block;
+        width: 70%;
+        margin: 5rem auto;
+        border-radius: 0.5rem;
+    }
+    </style>
+
+    <img src="https://images.unsplash.com/photo-1543352632-5a4b24e4d2a6?q=80&w=3425&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="centered-image">
+    """,
+    unsafe_allow_html=True,
+)
+    # If not, then initialize it
+if 'connected' not in st.session_state:
+    st.session_state['connected'] = False
 
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o-mini"
+        # Check if 'key' already exists in session_state
+
+
 
 # Authenticate the user
 doAuth()
@@ -62,7 +85,7 @@ def setInitialContext():
             Step 3: If Step 2 contains the word "snack", add the snack for each day at the end before the start of next day meals.
             Step 4: At the end create a shopping list for the meal plan. End the shopping list with the exact word: End of the List
             Step 5: After generating the meal plan ask the patient to type in the word “y“ if they want to get the meal plan emailed to them.
-            Step 6: Once the patient typed in "y", say the PDF should arrive to the email within 10min.
+            Step 6: Once the patient typed in "PDF", say the PDF should arrive to the email within 10min.
             For what I ask you to do, take factor into consideration of the patient’s mental well being and really try to help the patient recover from the pcos symptoms. Reference the existing pcos researches and positive feedback from other pcos patients and your own researches that help women recover from the pcos symptoms.
             Ask me for the first task.
             CAPS LOCK words are placeholders for content inputted by the patient. Content enclosed in “double quotes” indicates what the patient types in. The patient can end the current command anytime by typing “menu” and you tell them to input any of the following:
@@ -80,7 +103,7 @@ def setInitialContext():
         st.session_state.messages.append(
             {
                 "role": "assistant",
-                "content": f"Hello {st.session_state['user_info'].get('name')}, how can I assist you today? Type 'm' if you want me to generate a mealplan for you.",
+                "content": f"Hello {st.session_state['user_info'].get('name')}, you meal preference well noted. How can I assist you today? Type 'm' if you want me to generate a mealplan for you.",
             }
         )
 
@@ -168,7 +191,7 @@ def displayChatMessages():
     if prompt := st.chat_input("How can I help you?"):
 
         # Generate PDF if the user message contains PDF
-        if "y" in prompt:
+        if "PDF" in prompt:
             st.session_state.messages.append(
                 {
                     "role": "assistant",
